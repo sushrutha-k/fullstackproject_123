@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Product - FairDeal</title>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #fdfdfd;
+      padding: 40px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #e91e63;
+    }
+
+    form {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px;
+      background: #e91e63;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #c2185b;
+    }
+
+    .success {
+      color: green;
+      font-size: 1rem;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Dealer - Add New Product</h2>
+
+  <form id="productForm">
+    <label>Product Name:</label>
+    <input type="text" id="productName" required>
+
+    <label>Category:</label>
+    <select id="category" required>
+      <option value="">Select a category</option>
+      <option value="Seeds">Seeds</option>
+      <option value="Fertilizers">Fertilizers</option>
+      <option value="Pesticides">Pesticides</option>
+      <option value="Irrigation Tools">Irrigation Tools</option>
+      <option value="Farming Tools">Farming Tools</option>
+    </select>
+
+    <label>Price (₹):</label>
+    <input type="number" id="price" required min="1">
+
+    <label>Sizes (comma-separated):</label>
+    <input type="text" id="sizes" placeholder="e.g. 1kg, 500ml, 250g" required>
+
+    <label>Image URL:</label>
+    <input type="text" id="imageUrl" placeholder="example.com/product.jpg" required>
+
+    <label>Dealers (comma-separated):</label>
+    <input type="text" id="dealers" placeholder="e.g. Dealer1, Dealer2, Dealer3" required>
+
+    <label>Dealer Prices (comma-separated, same order as dealers):</label>
+    <input type="text" id="dealerPrices" placeholder="e.g. 100, 150, 200" required>
+
+    <button type="submit">Add Product</button>
+    <div class="success" id="successMsg"></div>
+  </form>
+
+  <script>
+    document.getElementById("productForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const name = document.getElementById("productName").value.trim();
+        const category = document.getElementById("category").value.trim();
+        const price = document.getElementById("price").value.trim();
+        const sizes = document.getElementById("sizes").value.trim().split(",").map(s => s.trim());
+        const image = document.getElementById("imageUrl").value.trim();
+        const dealers = document.getElementById("dealers").value.trim().split(",").map(d => d.trim());
+        const dealerPrices = document.getElementById("dealerPrices").value.trim().split(",").map(p => p.trim());
+
+        if (dealers.length !== dealerPrices.length) {
+            alert("The number of dealers and prices must match.");
+            return;
+        }
+
+        // Fill remaining dealers/prices as null
+        while (dealers.length < 3) dealers.push(null);
+        while (dealerPrices.length < 3) dealerPrices.push(null);
+
+        try {
+            const response = await fetch("http://localhost:3000/api/products/add", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name,
+                    category,
+                    price,
+                    sizes,
+                    dealers,
+                    dealerPrices,
+                    image
+                })
+            });
+
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message);
+
+            document.getElementById("successMsg").textContent = "Product added successfully!";
+            this.reset();
+            setTimeout(() => {
+      window.location.href = "/";  // Redirect to home page
+    }, 2000);
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+  </script>
+  <script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'te', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+}
+</script>
+</body>
+</html>

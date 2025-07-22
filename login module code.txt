@@ -1,0 +1,33 @@
+<!-- Login/Signup Modal -->
+<div class="modal" id="loginModal">
+    <h2 id="loginTitle">Login</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="handleAuth()">Submit</button>
+    <p id="toggleText">New user? <span onclick="toggleAuth()" style="color: #E91E63; cursor: pointer;">Create an account</span></p>
+    <button class="close-btn" onclick="closeModal()">Cancel</button>
+</div>
+
+<script>
+    let isSignUp = false;
+
+    function toggleAuth() {
+        isSignUp = !isSignUp;
+        document.getElementById("loginTitle").innerText = isSignUp ? "Sign Up" : "Login";
+        document.getElementById("toggleText").innerHTML = isSignUp 
+            ? 'Already have an account? <span onclick="toggleAuth()" style="color: #E91E63; cursor: pointer;">Login</span>'
+            : 'New user? <span onclick="toggleAuth()" style="color: #E91E63; cursor: pointer;">Create an account</span>';
+    }
+
+    function handleAuth() {
+        let username = document.getElementById("username").value;
+        let password = document.getElementById("password").value;
+        
+        if (isSignUp) {
+            alert(Account created for ${username});
+        } else {
+            alert(Welcome back, ${username});
+        }
+        closeModal();
+    }
+</script>

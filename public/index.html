@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FairDeal - In Agriculture Sector</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <style>
+        /* Styling for the Google Translate dropdown */
+        #google_translate_element {
+            padding: 7px 12px;
+            background: #E91E63;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        #google_translate_element:hover {
+            background: #FFC107;
+            color: black;
+        }
+
+        .goog-te-gadget-simple {
+            background-color: transparent !important;
+            border: none !important;
+        }
+
+        .goog-te-gadget-simple .goog-te-menu-value {
+            color: white !important;
+            font-weight: bold;
+        }
+
+        #google_translate_element:hover .goog-te-gadget-simple .goog-te-menu-value {
+            color: black !important;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+            color: #333;
+            scroll-behavior: smooth;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #333;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #E91E63;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a,
+        .login-btn,
+        .contact-btn {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover,
+        .login-btn:hover,
+        .contact-btn:hover {
+            color: #FFC107;
+        }
+
+        .search-box {
+            padding: 7px;
+            border: 2px solid #E91E63;
+            border-radius: 5px;
+        }
+
+        .Cart {
+            padding: 7px 12px;
+            background: #E91E63;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .Cart:hover {
+            background: #FFC107;
+            color: black;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            color: white;
+            padding: 100px 20px;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('background.jpg') no-repeat center center/cover;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            color: #FFC107;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+        }
+
+        /* Features Section */
+        .features,
+        .about-us {
+            padding: 40px;
+            text-align: center;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .feature {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: 0.3s;
+        }
+
+        .feature:hover {
+            background: #FFC107;
+            transform: scale(1.05);
+        }
+
+        .feature p {
+            margin: 10px 0 0;
+            font-weight: bold;
+            color: #E91E63;
+        }
+
+        /* About Us */
+        .about-us {
+            background: white;
+            padding: 60px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            margin: 30px auto;
+        }
+
+        .about-us h2 {
+            color: #E91E63;
+            font-size: 2rem;
+        }
+
+        .about-us p {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        /* Modals (Login & Contact) */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            text-align: center;
+            z-index: 2000;
+            width: 300px;
+        }
+
+        .modal input,
+        .modal textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .modal button {
+            background: #E91E63;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            border-radius: 5px;
+        }
+
+        .modal button:hover {
+            background: #FFC107;
+        }
+
+        .close-btn {
+            background: #ccc;
+            color: black;
+            padding: 5px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1500;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 15px;
+            background: #333;
+            color: white;
+            margin-top: 20px;
+        }
+
+        /* Chatbot Button */
+        .chatbot-toggler {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            height: 50px;
+            width: 50px;
+            background: #E91E63;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 2001;
+            /* Above modals */
+        }
+
+        .chatbot-toggler:hover {
+            background: #FFC107;
+            color: black;
+            transform: scale(1.05);
+        }
+
+        .chatbot-toggler.show-chat {
+            transform: rotate(90deg);
+        }
+
+        /* Chatbot Window */
+        .chatbot {
+            position: fixed;
+            bottom: 90px;
+            right: 30px;
+            width: 350px;
+            height: 450px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: scale(0.5);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 2000;
+        }
+
+        .chatbot.show-chat {
+            transform: scale(1);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .chatbot header {
+            background: #E91E63;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            position: relative;
+        }
+
+        .chatbot header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .chatbot .chatbox {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f0f2f5;
+        }
+
+        .chatbox .chat {
+            display: flex;
+            margin-bottom: 15px;
+        }
+
+        .chatbox .chat p {
+            max-width: 75%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            line-height: 1.5;
+            word-wrap: break-word;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .chatbox .outgoing {
+            justify-content: flex-end;
+        }
+
+        .chatbox .outgoing p {
+            background: #E91E63;
+            color: white;
+            border-bottom-right-radius: 0;
+        }
+
+        .chatbox .incoming {
+            justify-content: flex-start;
+        }
+
+        .chatbox .incoming p {
+            background: #e2e2e2;
+            color: #333;
+            border-bottom-left-radius: 0;
+        }
+
+        .chatbox .incoming p.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+
+        .chatbot .chat-input {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-top: 1px solid #eee;
+            background: #fff;
+        }
+
+        .chat-input textarea {
+            flex-grow: 1;
+            height: 40px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            padding: 10px 15px;
+            margin-right: 10px;
+            resize: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            overflow: hidden;
+        }
+
+        .chat-input textarea:focus {
+            outline: none;
+            border-color: #E91E63;
+            box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.2);
+        }
+
+        .chat-input span {
+            color: #E91E63;
+            font-size: 24px;
+            cursor: pointer;
+            transition: 0.3s;
+            user-select: none;
+            /* Prevent text selection on icon */
+        }
+
+        .chat-input span:hover {
+            color: #FFC107;
+        }
+
+        /* Suggested questions container */
+        .suggested-questions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px 20px;
+            border-top: 1px solid #eee;
+            background-color: #f0f2f5;
+            justify-content: center;
+        }
+
+        .suggested-questions button {
+            padding: 8px 15px;
+            background-color: #5cb85c;
+            /* Green for suggestions */
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .suggested-questions button:hover {
+            background-color: #4cae4c;
+        }
+
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            color: black;
+            padding: 10px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            width: 100%;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            gap: 10px;
+        }
+
+        .google-btn img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .google-btn:hover {
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <span class="main-title">FairDeal</span>
+            <span class="subtitle">In Agriculture Sector</span>
+        </div>
+
+        <style>
+            /* Import Google Font */
+            @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300&display=swap');
+
+            .logo {
+                text-align: center;
+                margin: 10px 0;
+            }
+
+            /* Stylish Main Title */
+            .main-title {
+                font-family: 'Playfair Display', serif;
+                /* Elegant Font */
+                font-size: 36px;
+                font-weight: 700;
+                color: #E91E63;
+                /* Highlight Color */
+                text-transform: uppercase;
+                letter-spacing: 2px;
+            }
+
+            /* Subtitle Styling */
+            .subtitle {
+                display: block;
+                font-family: 'Poppins', sans-serif;
+                /* Simple and Clean Font */
+                font-size: 16px;
+                color: #FFFFFF;
+                font-weight: 400;
+                margin-top: 5px;
+            }
+        </style>
+
+
+        <ul class="nav-links">
+            <li><a href="dealer-registration.html">Dealer Portal</a></li>
+            <li><a href="#about">About Us</a></li>
+            <li><span class="contact-btn" onclick="openContactModal()">Contact Us</span></li>
+            <li><button class="Cart" onclick="window.location.href='cart.html'">Cart</button></li>
+            <li><span class="login-btn" onclick="openLoginModal()">Login</span></li>
+
+            <li>
+                <div id="google_translate_element"></div>
+            </li>
+        </ul>
+    </nav>
+
+
+    <div class="category-bar">
+        <a href="seeds.html" class="category-button">Seeds</a>
+        <a href="fertilizers.html" class="category-button">Fertilizers</a>
+        <a href="pesticides.html" class="category-button">Pesticides</a>
+        <a href="irrigation.html" class="category-button">Irrigation Tools</a>
+        <a href="farming.html" class="category-button">Farming Tools</a>
+    </div>
+
+    <style>
+        .category-bar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            background-color: #ffffff;
+            padding: 10px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 60px;
+            z-index: 999;
+            overflow-x: auto;
+        }
+
+        .category-button {
+            padding: 10px 20px;
+            background-color: #E91E63;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+
+        .category-button:hover {
+            background-color: #FFC107;
+            color: black;
+        }
+    </style>
+
+    <script>
+        function openCategory(name) {
+            alert("You clicked: " + name);
+            // Future: Navigate or show dropdown products for selected category
+        }
+    </script>
+
+
+    <header class="hero">
+        <h1>Revolutionizing Pricing with Fair Competition</h1>
+        <p>Compare prices from multiple verified dealers and choose the best deal.</p>
+    </header>
+
+    <section class="features">
+        <div class="feature">
+            <p>🔍 Real-time Price Comparison</p>
+        </div>
+        <div class="feature">
+            <p>✔ Verified Dealers & Fair Competition</p>
+        </div>
+        <div class="feature">
+            <p>⭐ User Reviews & Ratings</p>
+        </div>
+        <div class="feature">
+            <p>💳 Secure Payments & Order Tracking</p>
+        </div>
+        <div class="feature">
+            <p>📞 24/7 Customer Support</p>
+        </div>
+        <div class="feature">
+            <p>🛒 Best Deals & Discounts</p>
+        </div>
+    </section>
+
+    <section class="about-us" id="about">
+        <h2>About FairDeal</h2>
+        <p>FairDeal simplifies agricultural procurement by connecting farmers directly with verified dealers for essential supplies like pesticides, seeds, and fertilizers. By eliminating middlemen, we ensure fair pricing, quality products, and a seamless buying experience, helping farmers make cost-effective and informed decisions.</p>
+    </section>
+
+    <div class="overlay" id="overlay"></div>
+
+
+    <div class="modal" id="loginModal">
+        <h2 id="loginTitle">Login</h2>
+
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <input type="password" id="confirmPassword" placeholder="Confirm Password" style="display: none;">
+
+        <button onclick="handleAuth()">Submit</button>
+
+        <p id="toggleText">New user?
+            <span onclick="toggleAuth()" style="color: #E91E63; cursor: pointer;">Create an account</span>
+        </p>
+
+        <button class="google-btn" onclick="loginWithGoogle()">
+            <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo">
+            Login with Google
+        </button>
+
+        <button class="close-btn" onclick="closeModal()">Cancel</button>
+    </div>
+
+
+    <div class="modal" id="contactModal">
+        <h2>Contact Us</h2>
+        <input type="text" id="contact-phone" placeholder="Phone Number">
+        <input type="email" id="contact-email" placeholder="Email">
+        <textarea id="contact-comment" placeholder="Comment"></textarea>
+        <button onclick="handleContactForm()">Send</button>
+        <button class="close-btn" onclick="closeModal()">Cancel</button>
+    </div>
+
+    <button class="chatbot-toggler" onclick="toggleChatbot()">
+        <span class="material-symbols-rounded">chat</span>
+    </button>
+
+    <div class="chatbot">
+        <header>
+            <h2>FairDeal Chatbot</h2>
+        </header>
+        <div class="chatbox">
+            <div class="chat incoming">
+                <p>Hi there 👋<br>How can I help you with agriculture today?</p>
+            </div>
+        </div>
+        <div class="suggested-questions" id="suggestedQuestions">
+            </div>
+        <div class="chat-input">
+            <textarea placeholder="Enter a message..." spellcheck="false" required></textarea>
+            <span id="send-btn" class="material-symbols-rounded">send</span>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2025 FairDeal. All rights reserved. | Ensuring Transparent & Ethical Pricing</p>
+    </footer>
+
+    <script type="text/javascript">
+        // Google Translate Init
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'te',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+
+        // --- Modal Functions ---
+        function openLoginModal() {
+            document.getElementById("loginModal").style.display = "block";
+            document.getElementById("overlay").style.display = "block";
+        }
+
+        function openContactModal() {
+            document.getElementById("contactModal").style.display = "block";
+            document.getElementById("overlay").style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById("loginModal").style.display = "none";
+            document.getElementById("contactModal").style.display = "none";
+            document.getElementById("overlay").style.display = "none";
+        }
+
+        // --- Login/Logout & Contact Form ---
+        let isSignUp = false;
+
+        function toggleAuth() {
+            isSignUp = !isSignUp;
+            document.getElementById("loginTitle").innerText = isSignUp ? "Sign Up" : "Login";
+            document.getElementById("toggleText").innerHTML = isSignUp ?
+                'Already have an account? <span onclick="toggleAuth()" style="color: #E91E63; cursor: pointer;">Login</span>' :
+                'New user? <span onclick="toggleAuth()" style="color: #E91E63; cursor: pointer;">Create an account</span>';
+            document.getElementById("confirmPassword").style.display = isSignUp ? "block" : "none";
+        }
+
+        function handleAuth() {
+            let email = document.getElementById("email").value;
+            let password = document.getElementById("password").value;
+            let confirmPassword = document.getElementById("confirmPassword").value;
+
+            if (isSignUp) {
+                if (password !== confirmPassword) {
+                    alert("Passwords do not match!");
+                    return;
+                }
+                axios.post("http://localhost:3000/api/auth/signup", {
+                        email,
+                        password,
+                        username: email.split("@")[0]
+                    })
+                    .then(response => {
+                        alert("Account created successfully!");
+                        toggleAuth();
+                    })
+                    .catch(error => {
+                        alert(error.response.data.message || "Signup failed. Please try again.");
+                    });
+            } else {
+                axios.post("http://localhost:3000/api/auth/login", {
+                        email,
+                        password
+                    })
+                    .then(response => {
+                        alert("Login successful!");
+                        console.log("JWT Token:", response.data.token);
+                        localStorage.setItem('username', email.split("@")[0]);
+                        updateLoginButton();
+                        closeModal();
+                    })
+                    .catch(error => {
+                        alert(error.response.data.message || "Login failed. Please try again.");
+                    });
+            }
+        }
+
+        function updateLoginButton() {
+            const username = localStorage.getItem('username');
+            const loginBtn = document.querySelector('.login-btn');
+            loginBtn.innerHTML = ''; // Clear existing content
+
+            if (username) {
+                const usernameElement = document.createElement('span');
+                usernameElement.textContent = `Hello, ${username}`;
+                usernameElement.style.display = 'block';
+                usernameElement.style.marginBottom = '5px';
+
+                const logoutBtn = document.createElement('button');
+                logoutBtn.textContent = 'Logout';
+                logoutBtn.style.cssText =
+                    'padding: 5px 10px; background-color: #E91E63; color: white; border: none; cursor: pointer; border-radius: 5px; margin-top: 5px;';
+                logoutBtn.addEventListener('click', logout);
+
+                loginBtn.appendChild(usernameElement);
+                loginBtn.appendChild(logoutBtn);
+            } else {
+                loginBtn.textContent = 'Login';
+                loginBtn.setAttribute('onclick', 'openLoginModal()');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('username');
+            updateLoginButton();
+            alert('Logged out successfully!');
+        }
+
+        function handleContactForm() {
+            const phone = document.getElementById("contact-phone").value;
+            const email = document.getElementById("contact-email").value;
+            const comment = document.getElementById("contact-comment").value;
+
+            if (!phone || !email || !comment) {
+                alert("Please fill out all fields before submitting.");
+                return;
+            }
+
+            axios.post("http://localhost:3000/api/contact", {
+                    phone: phone,
+                    email: email,
+                    comment: comment
+                })
+                .then(response => {
+                    alert("Your message has been sent successfully!");
+                    closeModal();
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert("There was a problem sending your message. Please try again later.");
+                });
+        }
+
+        function loginWithGoogle() {
+            alert("Redirecting to Google login...");
+            // Integrate Google OAuth login here
+        }
+
+        // --- Chatbot Specific JavaScript ---
+        // Ensure these DOM elements are defined AFTER their HTML is loaded
+        const chatbotToggler = document.querySelector(".chatbot-toggler");
+        const chatbot = document.querySelector(".chatbot");
+        const chatInput = document.querySelector(".chat-input textarea");
+        const sendChatBtn = document.querySelector(".chat-input span");
+        const chatbox = document.querySelector(".chatbox");
+        const suggestedQuestionsContainer = document.getElementById("suggestedQuestions");
+
+        let userMessage = null;
+
+        const predefinedQA = {
+            "what types of seeds do you offer?": "We offer a wide range of seeds including common field crops (e.g., rice, wheat, corn), vegetable seeds (e.g., tomato, chili, brinjal), and oilseed crops (e.g., groundnut, mustard). Please specify if you are looking for something particular!",
+            "how do i choose the right fertilizer for my crop?": "Choosing the right fertilizer depends on your soil type, crop requirements, and nutrient deficiencies. We recommend a soil test for precise recommendations. Generally, NPK (Nitrogen, Phosphorus, Potassium) fertilizers are crucial. For specific advice, please provide your crop and soil details.",
+            "what are common pesticides used in india?": "Common pesticides used in India include insecticides (e.g., chlorpyrifos, monocrotophos - *use with caution and as per regulations*), fungicides (e.g., mancozeb, carbendazim), and herbicides (e.g., glyphosate, 2,4-D). Always follow safety guidelines and local regulations when using pesticides.",
+            "can you tell me about irrigation methods?": "Popular irrigation methods include flood irrigation, sprinkler irrigation, and drip irrigation. Drip irrigation is highly efficient for water conservation, especially beneficial in regions with water scarcity like parts of India. We can help you find suitable irrigation tools.",
+            "what farming tools are essential for small scale farmers?": "Essential farming tools for small-scale farmers often include spades, hoes, sickles, sprayers, and basic plows. Modern tools like power tillers and small tractors can significantly increase efficiency. We have a selection of both traditional and modern farming tools.",
+            "how can i register as a dealer?": "To register as a dealer, please visit our 'Dealer Portal' page (link is in the navigation bar). You'll find detailed instructions and the registration form there.",
+            "where can i find pricing information?": "Pricing information is available directly on the product pages once you search for a specific item. Our platform allows you to compare prices from different verified dealers to find the best deal.",
+            "what is fairdeal?": "FairDeal is an online platform that connects farmers directly with verified agricultural dealers. Our goal is to ensure fair pricing, quality products, and a transparent buying experience by eliminating middlemen.",
+            "how does fairdeal ensure fair competition?": "FairDeal fosters fair competition by allowing multiple verified dealers to list their products and prices on our platform. Farmers can easily compare these prices and choose the best offer, which naturally drives competitive pricing among dealers.",
+            "what is the return policy?": "Our return policy typically allows returns within a certain number of days if the product is damaged, incorrect, or not as described. Please refer to our detailed 'Terms and Conditions' or contact customer support for specific return guidelines.",
+            "who are your verified dealers?": "Our verified dealers are agricultural suppliers who have undergone a thorough vetting process by FairDeal to ensure their credibility, product quality, and adherence to fair business practices. We prioritize working with trusted partners to serve our farming community.",
+            "i have a problem with my order.": "We apologize for the inconvenience. Please go to your 'Order Tracking' section if you are logged in, or contact our 24/7 customer support with your order number, and we will assist you immediately.",
+            "tell me about organic farming.": "Organic farming emphasizes natural processes and avoids synthetic pesticides, fertilizers, and genetically modified organisms (GMOs). It focuses on soil health, biodiversity, and ecological balance. We offer some organic-certified products.",
+            "what is crop rotation?": "Crop rotation is the practice of growing a series of different types of crops in the same area across a sequence of growing seasons. It helps in improving soil health, optimizing nutrients in the soil, and combating pest and weed pressure.",
+            "what are the benefits of using drones in agriculture?": "Drones in agriculture can provide numerous benefits such as precise spraying of pesticides and fertilizers, crop monitoring, irrigation management, and even planting. They help in increasing efficiency and reducing resource wastage.",
+            "can i sell my produce on fairdeal?": "Currently, FairDeal primarily focuses on connecting farmers with suppliers for agricultural inputs. We do not facilitate the sale of produce directly. However, we are always looking to expand our services, so stay tuned for future updates!"
+        };
+
+        const initialSuggestedQuestions = [
+            "What farming tools are essential for small scale farmers?",
+            "How can I register as a dealer?"
+        ];
+
+        const generateResponse = (incomingChat) => {
+            const pElement = document.createElement("p");
+            const lowerCaseMessage = incomingChat.toLowerCase().trim();
+
+            let response = predefinedQA[lowerCaseMessage];
+
+            if (response) {
+                pElement.textContent = response;
+            } else {
+                pElement.textContent = "I'm sorry, I don't have an answer for that specific question at the moment. please contact us.";
+                pElement.classList.add("error"); // Add an error class for styling
+            }
+
+            const chatDiv = document.createElement("div");
+            chatDiv.classList.add("chat", "incoming");
+            chatDiv.appendChild(pElement);
+            chatbox.appendChild(chatDiv);
+            chatbox.scrollTo(0, chatbox.scrollHeight);
+        }
+
+        const handleChat = () => {
+            userMessage = chatInput.value.trim();
+            if (!userMessage) return;
+
+            chatInput.value = ""; // Clear input field
+
+            const chatDiv = document.createElement("div");
+            chatDiv.classList.add("chat", "outgoing");
+            chatDiv.innerHTML = `<p>${userMessage}</p>`;
+            chatbox.appendChild(chatDiv);
+            chatbox.scrollTo(0, chatbox.scrollHeight);
+
+            // Simulate typing and generate response after a short delay
+            setTimeout(() => {
+                generateResponse(userMessage);
+            }, 600);
+        }
+
+        // Check if elements exist before adding event listeners
+        if (sendChatBtn) {
+            sendChatBtn.addEventListener("click", handleChat);
+        }
+
+        if (chatInput) {
+            chatInput.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleChat();
+                }
+            });
+        }
+
+        // Function to toggle chatbot visibility
+        function toggleChatbot() {
+            chatbot.classList.toggle("show-chat");
+            chatbotToggler.classList.toggle("show-chat");
+        }
+
+        // Function to display suggested questions
+        function displaySuggestedQuestions() {
+            if (suggestedQuestionsContainer) { // Ensure container exists
+                suggestedQuestionsContainer.innerHTML = ''; // Clear previous suggestions
+                initialSuggestedQuestions.forEach(question => {
+                    const button = document.createElement('button');
+                    button.textContent = question;
+                    button.onclick = () => {
+                        chatInput.value = question;
+                        handleChat();
+                    };
+                    suggestedQuestionsContainer.appendChild(button);
+                });
+            }
+        }
+
+        // Combined window.onload to ensure all necessary functions run
+        window.onload = function() {
+            updateLoginButton(); // Update the login/logout button when the page loads
+            if (typeof googleTranslateElementInit === 'function') {
+                googleTranslateElementInit(); // Initialize Google Translate
+            }
+            displaySuggestedQuestions(); // Display chatbot suggestions on page load
+        };
+    </script>
+
+</body>
+</html>

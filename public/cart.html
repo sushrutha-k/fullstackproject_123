@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cart - FairDeal</title>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fdfdfd;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #e91e63;
+            margin-bottom: 20px;
+        }
+
+        .dealer-section {
+            background: #ffffff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .dealer-name {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .cart-item {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-details {
+            flex-grow: 1;
+        }
+
+        .cart-item-name {
+            font-weight: bold;
+            color: #444;
+        }
+
+        .cart-price {
+            color: #4caf50;
+            font-weight: bold;
+            margin-left: 20px;
+        }
+
+        .remove-button {
+            background: #ff5252;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 20px;
+        }
+
+        .remove-button:hover {
+            background: #e53935;
+        }
+
+        .checkout-button {
+            background: #e91e63;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .checkout-button:hover {
+            background: #d81b60;
+        }
+
+        .empty-message {
+            color: #777;
+            text-align: center;
+            margin-top: 50px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h2>Your Cart</h2>
+    <div id="cart-container"></div>
+    <script>
+        window.onload = function () {
+            const username = localStorage.getItem("username");
+            if (!username) {
+                alert("Please login to view your cart.");
+                window.location.href = "index.html";
+                return;
+            }
+            displayCart();
+        };
+
+        function displayCart() {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            const cartContainer = document.getElementById("cart-container");
+
+            if (cart.length === 0) {
+                cartContainer.innerHTML = `<p class="empty-message">Your cart is empty.</p>`;
+                return;
+            }
+
+            const dealers = {};
+            cart.forEach(item => {
+                if (!dealers[item.dealer]) dealers[item.dealer] = [];
+                dealers[item.dealer].push(item);
+            });
+
+            cartContainer.innerHTML = "";
+
+            for (const dealer in dealers) {
+                const dealerSection = document.createElement("div");
+                dealerSection.className = "dealer-section";
+                dealerSection.innerHTML = `<div class="dealer-name">Dealer: ${dealer}</div>`;
+
+                let dealerTotal = 0;
+                dealers[dealer].forEach(item => {
+                    const cartItem = document.createElement("div");
+                    cartItem.className = "cart-item";
+                    cartItem.innerHTML = `
+                        <div class="cart-details">
+                            <span class="cart-item-name">${item.name}</span>
+                        </div>
+                        <span class="cart-price">₹${item.price}</span>
+                        <button class="remove-button" onclick="removeFromCart('${item.name}', '${dealer}')">Remove</button>
+                    `;
+                    dealerSection.appendChild(cartItem);
+                    dealerTotal += parseInt(item.price);
+                });
+
+                dealerSection.innerHTML += `
+                    <div class="cart-item" style="font-weight: bold;">
+                        <span>Total:</span><span class="cart-price">₹${dealerTotal}</span>
+                    </div>
+                    <button class="checkout-button" onclick="proceedToBuy('${dealer}', ${dealerTotal})">Checkout with ${dealer} - ₹${dealerTotal}</button>
+                `;
+
+                cartContainer.appendChild(dealerSection);
+            }
+        }
+
+        function removeFromCart(name, dealer) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            cart = cart.filter(item => item.name !== name || item.dealer !== dealer);
+            localStorage.setItem("cart", JSON.stringify(cart));
+            displayCart();
+        }
+
+        function proceedToBuy(dealer, total) {
+            const dealerItems = JSON.parse(localStorage.getItem("cart")).filter(item => item.dealer === dealer);
+            const productParam = dealerItems.map(item => item.name).join(", ");
+            const detailsParam = dealerItems.map(item => `${encodeURIComponent(item.name)};${encodeURIComponent(item.price)}`).join("|");
+            window.location.href = `buy-now.html?dealer=${encodeURIComponent(dealer)}&products=${productParam}&total=${total}&details=${detailsParam}`;
+        }
+    </script>
+    <script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'te', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+}
+</script>
+</body>
+</html>

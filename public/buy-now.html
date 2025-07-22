@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Buy Now - FairDeal</title>
+    <script src="https://js.stripe.com/v3/"></script> <!-- Stripe.js -->
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fdfdfd;
+            padding: 20px;
+        }
+        h2 {
+            color: #e91e63;
+            margin-bottom: 20px;
+        }
+        .order-summary {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .product-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .product-table th, .product-table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .product-table th {
+            background-color: #f8f8f8;
+            font-weight: bold;
+        }
+        .pay-button {
+            background: #e91e63;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+        }
+        .pay-button:hover {
+            background: #d81b60;
+        }
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #fff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 8px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <h2>Order Summary</h2>
+    <div class="order-summary">
+        <table class="product-table" id="product-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <p><strong>Total Amount: ₹<span id="total-amount"></span></strong></p>
+        <p><strong>Dealer: <span id="dealer-name"></span></strong></p>
+        <button class="pay-button" id="pay-button">Pay Now<span class="spinner" id="spinner" style="display: none;"></span></button>
+    </div>
+
+    <script>
+        // Initialize Stripe with your public key
+        const stripe = Stripe("pk_test_51RXxvIEKcSumMuc42z3fVTEsavxI1WxtOkeTKGSJe6W6CY3aoqTA9aTnoaP3FH0I6pdcOIA6KFauBlsz2rH6k7is00fhXE1bce"); // replace with your Stripe publishable key
+        let dealer = null;
+        window.onload = function () {
+            const params = new URLSearchParams(window.location.search);
+            const dealer = params.get("dealer") || "N/A";
+            const total = params.get("total") || "0";
+            const productDetails = params.get("details") ? params.get("details").split("|") : [];
+
+            document.getElementById("total-amount").textContent = total;
+            document.getElementById("dealer-name").textContent = dealer;
+            const tbody = document.querySelector("#product-table tbody");
+
+            productDetails.forEach(detail => {
+                const [name, price] = detail.split(";");
+                const row = `<tr><td>${decodeURIComponent(name.trim())}</td><td>₹${decodeURIComponent(price.trim())}</td></tr>`;
+                tbody.innerHTML += row;
+            });
+        };
+
+        document.getElementById("pay-button").addEventListener("click", () => {
+            const spinner = document.getElementById("spinner");
+            spinner.style.display = "inline-block";
+            const totalAmount = parseFloat(document.getElementById("total-amount").textContent.replace(/,/g, '')) || 0;
+            const amountInPaise = Math.round(totalAmount * 100); // Convert ₹ to paise
+
+            // Call your backend to create the checkout session
+            fetch("/api/payment/create-checkout-session", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ amount: amountInPaise, dealer: dealer }),
+})
+
+.then(res => {
+  if (!res.ok) {
+    return res.text().then(text => { throw new Error(text || res.statusText); });
+  }
+  return res.json();
+})
+.then(data => {
+  if (data.sessionId) {
+    return stripe.redirectToCheckout({ sessionId: data.sessionId });
+  } else {
+    throw new Error("No sessionId in response");
+  }
+})
+.catch(error => {
+  alert("Payment failed: " + error.message);
+  spinner.style.display = "none";
+});
+
+     });
+    </script>
+
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'te', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+        }
+    </script>
+</body>
+</html>

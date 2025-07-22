@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <title>Farming Tools - FairDeal</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #fdfdfd;
+    }
+    .top-nav {
+      background: #e91e63;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .top-nav .logo {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .top-nav .nav-actions a,
+    .top-nav .nav-actions button {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: bold;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .container {
+      padding: 20px;
+    }
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .product-card {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    .product-card:hover {
+      transform: scale(1.03);
+    }
+    .product-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .product-name {
+      font-weight: bold;
+      font-size: 1.2em;
+      color: #333;
+      margin: 10px 0 5px;
+    }
+    .price {
+      font-weight: bold;
+      color: #4caf50;
+      margin-bottom: 5px;
+    }
+    .size-select, .dealer-select {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 5px;
+    }
+    .cart-button, .buy-button {
+      background-color: #ffc107;
+      color: black;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+      width: 100%;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .cart-button:hover, .buy-button:hover {
+      background-color: #e0a800;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-nav">
+    <div class="logo">FairDeal</div>
+    <div class="nav-actions">
+      <a href="index.html">Home</a>
+      <button onclick="window.location.href='cart.html'">Cart</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <section class="products" id="farming-list"></section>
+  </div>
+
+  <script>
+    async function fetchFarmingTools() {
+      try {
+        const response = await fetch("http://localhost:3000/api/farming");
+        const tools = await response.json();
+        const farmingList = document.getElementById('farming-list');
+
+        tools.forEach(tool => {
+          const dealers = Object.entries(tool.dealerPrices || {})
+            .map(([dealer, price]) => `<option value="${dealer}|${price}">${dealer} - ₹${price}</option>`)
+            .join("");
+
+          const sizes = (tool.sizes || [])
+            .map(size => `<option>${size}</option>`)
+            .join("");
+
+          const card = `
+            <div class="product-card">
+              <img src="${tool.image || 'images/default-tool.jpg'}" alt="${tool.name}">
+              <div class="product-name">${tool.name}</div>
+              <div class="price">Starting at ₹${tool.dealerPrices.dealer1 || 'N/A'}</div>
+              <select class="size-select">${sizes}</select>
+              <select class="dealer-select">${dealers}</select>
+              <button class="cart-button" onclick="addToCart('${tool.name}')">Add to Cart</button>
+            </div>
+          `;
+
+          farmingList.innerHTML += card;
+        });
+      } catch (error) {
+        console.error("Error fetching farming tools:", error);
+      }
+    }
+
+    function addToCart(productName) {
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      cart.push(productName);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert(productName + " added to cart!");
+    }
+
+
+    fetchFarmingTools();
+  </script>
+  <script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'te', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+}
+</script>
+
+</body>
+</html>

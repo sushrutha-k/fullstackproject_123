@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Payment Successful</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h1 { color: green; }
+  </style>
+</head>
+<body>
+  <h1>Payment Successful!</h1>
+  <p>Thank you for your purchase. Your payment was processed successfully.</p>
+  <p>Session ID: <span id="session-id"></span></p>
+  <script>
+  const params = new URLSearchParams(window.location.search);
+  const sessionId = params.get('session_id');
+  if (sessionId) {
+    fetch(`/api/payment/checkout-session?session_id=${sessionId}`)
+      .then(res => res.json())
+      .then(session => {
+        document.getElementById('session-id').textContent = sessionId;
+        // Display more info if needed, e.g.
+        // document.getElementById('amount').textContent = session.amount_total / 100;
+      })
+      .catch(() => {
+        document.getElementById('session-id').textContent = 'Error fetching session info';
+      });
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dealer Registration - FairDeal</title>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #fdfdfd;
+      padding: 40px;
+    }
+    h2 {
+      color: #e91e63;
+      text-align: center;
+    }
+    form {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px;
+      background: #e91e63;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #c2185b;
+    }
+    .error {
+      color: red;
+      font-size: 0.9em;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Dealer Registration Form</h2>
+  <form id="dealerForm">
+    <label>Full Name:</label>
+    <input type="text" id="name" required />
+
+    <label>Email:</label>
+    <input type="email" id="email" required />
+
+    <label>Phone Number:</label>
+    <input type="tel" id="phone" pattern="[6-9]{1}[0-9]{9}" required placeholder="10-digit number" />
+
+    <label>Address:</label>
+    <textarea id="address" rows="3" required></textarea>
+
+    <label>Business Name:</label>
+    <input type="text" id="business" required />
+
+    <label>Dealer License Number:</label>
+    <input type="text" id="license" pattern="[A-Z0-9]{8,15}" required placeholder="e.g., DL12345678" />
+
+    <label>GSTIN (optional):</label>
+    <input type="text" id="gstin" placeholder="e.g., 27ABCDE1234F1Z5" />
+
+    <div class="error" id="errorMsg"></div>
+
+    <button type="submit">Register Dealer</button>
+  </form>
+
+  <script>
+    window.onload = function () {
+      const username = localStorage.getItem('username');
+      if (!username) {
+        alert("Please login to access this page.");
+        window.location.href = "index.html";
+        return;
+      }
+    };
+
+    document.getElementById("dealerForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const dealerData = {
+            name: document.getElementById("name").value.trim(),
+            email: document.getElementById("email").value.trim(),
+            phone: document.getElementById("phone").value.trim(),
+            address: document.getElementById("address").value.trim(),
+            business: document.getElementById("business").value.trim(),
+            license: document.getElementById("license").value.trim(),
+            gstin: document.getElementById("gstin").value.trim()
+        };
+
+        const errorDiv = document.getElementById("errorMsg");
+        errorDiv.textContent = "";
+
+        // Frontend validation
+        if (!/^[6-9][0-9]{9}$/.test(dealerData.phone)) {
+            errorDiv.textContent = "Enter a valid 10-digit phone number.";
+            return;
+        }
+
+        if (!/^[A-Z0-9]{8,15}$/.test(dealerData.license)) {
+            errorDiv.textContent = "Invalid license number format.";
+            return;
+        }
+
+        try {
+            // Check if dealer already exists
+            const checkResponse = await fetch(`http://localhost:3000/api/dealer/check?email=${dealerData.email}&license=${dealerData.license}`);
+            const checkResult = await checkResponse.json();
+            if (checkResponse.ok && checkResult.exists) {
+                alert("Dealer already registered. Redirecting to product page...");
+                localStorage.setItem("dealerVerified", "true");
+                window.location.href = "dealer-add-product.html";
+                return;
+            }
+
+            // Register dealer if not exists
+            const registerResponse = await fetch("http://localhost:3000/api/dealer/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(dealerData)
+            });
+
+            const registerResult = await registerResponse.json();
+            if (!registerResponse.ok) throw new Error(registerResult.message);
+
+            alert("Dealer registered successfully!");
+            localStorage.setItem("dealerVerified", "true");
+            window.location.href = "dealer-add-product.html";
+        } catch (error) {
+            errorDiv.textContent = error.message;
+        }
+    });
+  </script>
+  <script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'te', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+}
+</script>
+</body>
+</html>

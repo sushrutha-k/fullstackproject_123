@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <title>Irrigation Products - FairDeal</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #fdfdfd;
+    }
+    .top-nav {
+      background: #e91e63;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .top-nav .logo {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .top-nav .nav-actions a,
+    .top-nav .nav-actions button {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: bold;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .container {
+      padding: 20px;
+    }
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .product-card {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    .product-card:hover {
+      transform: scale(1.03);
+    }
+    .product-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .product-name {
+      font-weight: bold;
+      font-size: 1.2em;
+      color: #333;
+      margin: 10px 0 5px;
+    }
+    .price {
+      font-weight: bold;
+      color: #4caf50;
+      margin-bottom: 5px;
+    }
+    .sizes, .dealers {
+      margin: 10px 0;
+      text-align: left;
+    }
+    .buy-button, .cart-button {
+      background-color: #ffc107;
+      color: black;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+      width: 100%;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .buy-button:hover, .cart-button:hover {
+      background-color: #e0a800;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-nav">
+    <div class="logo">FairDeal</div>
+    <div class="nav-actions">
+      <a href="index.html">Home</a>
+      <button onclick="window.location.href='cart.html'">Cart</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="products" id="irrigation-list"></div>
+  </div>
+
+  <script>
+    async function fetchIrrigation() {
+      try {
+        const response = await fetch("http://localhost:3000/api/irrigation");
+        const irrigations = await response.json();
+        const irrigationList = document.getElementById('irrigation-list');
+
+        irrigations.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'product-card';
+
+          const dealersOptions = Object.entries(item.dealerPrices || {})
+            .map(([dealer, price]) => `<option value="${dealer}|${price}">${dealer} - ₹${price}</option>`)
+            .join("");
+
+          const sizesOptions = (item.sizes || [])
+            .map(size => `<option>${size}</option>`)
+            .join("");
+
+          card.innerHTML = `
+            <img src="${item.image || 'images/default-irrigation.jpg'}" alt="${item.name}">
+            <div class="product-name">${item.name}</div>
+            <div class="price">Starting at ₹${item.price}</div>
+            <div class="sizes">
+              <strong>Available Sizes:</strong>
+              <select>${sizesOptions}</select>
+            </div>
+            <div class="dealers">
+              <strong>Select Dealer:</strong>
+              <select id="dealer-${item.name.replace(/\s+/g, '-')}">
+                ${dealersOptions}
+              </select>
+            </div>
+            <button class="cart-button" onclick="addToCart('${item.name}')">Add to Cart</button>
+          `;
+
+          irrigationList.appendChild(card);
+        });
+      } catch (error) {
+        console.error("Error fetching irrigation products:", error);
+      }
+    }
+
+    function addToCart(productName) {
+      const dealerSelect = document.getElementById(`dealer-${productName.replace(/\s+/g, '-')}`);
+      const [dealer, price] = dealerSelect.value.split('|');
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+      cart.push({
+        name: productName,
+        dealer: dealer,
+        price: price
+      });
+
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert(`${productName} from ${dealer} added to cart!`);
+    }
+
+
+    fetchIrrigation();
+  </script>
+  <script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'te', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+}
+</script>
+
+</body>
+</html>
